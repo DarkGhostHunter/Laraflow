@@ -1,3 +1,11 @@
+![alt text](https://i.imgur.com/ITc1gc6.png)
+
+
+[![Latest Stable Version](https://poser.pugx.org/darkghosthunter/laraflow/v/stable)](https://packagist.org/packages/darkghosthunter/laraflow) [![License](https://poser.pugx.org/darkghosthunter/laraflow/license)](https://packagist.org/packages/darkghosthunter/laraflow)
+![](https://img.shields.io/packagist/php-v/darkghosthunter/laraflow.svg)
+ [![Build Status](https://travis-ci.com/DarkGhostHunter/Laraflow.svg?branch=master)](https://travis-ci.com/DarkGhostHunter/Laraflow) [![Coverage Status](https://coveralls.io/repos/github/DarkGhostHunter/Laraflow/badge.svg?branch=master)](https://coveralls.io/github/DarkGhostHunter/Laraflow?branch=master) [![Maintainability](https://api.codeclimate.com/v1/badges/0138e0686180120e68c5/maintainability)](https://codeclimate.com/github/DarkGhostHunter/Laraflow/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/0138e0686180120e68c5/test_coverage)](https://codeclimate.com/github/DarkGhostHunter/Laraflow/test_coverage)
+
+
 # Laraflow
 
 A nice wrapper to the Flow SDK for Laravel 5.7+.
@@ -150,7 +158,7 @@ class PaymentController extends Controller
 }
 ```
 
-Refer to the [Flow SDK Wiki](https://github.com/DarkGhostHunter/FlowSdk/wiki/Services) to see how to use each Service.
+Refer to the [Flow SDK Wiki](https://github.com/DarkGhostHunter/Laraflow/wiki/Services) to see how to use each Service.
 
 ### Billable
 

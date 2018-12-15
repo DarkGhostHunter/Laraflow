@@ -11,7 +11,7 @@ php:
 
 env:
   global:
-    - CC_TEST_REPORTER_ID=94c034bcac606d9fb670739affc9408445611d0bd6faa7ddbf6897a86f2cb898
+    - CC_TEST_REPORTER_ID=9e31583037d479d85071913aa0cd2de976afe374f9297324f80fe2a9ee91db7e
 
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
