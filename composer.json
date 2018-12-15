@@ -1,0 +1,58 @@
+{
+  "name": "darkghosthunter/laraflow",
+  "description": "Flow SDK integration for Laravel",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Italo Baeza C.",
+      "email": "DarkGhostHunter@Gmail.com"
+    }
+  ],
+  "support": {
+    "source": "https://github.com/darkghosthunter/laraflow",
+    "wiki": "https://github.com/darkghosthunter/flow-sdk/wiki",
+    "docs": "https://www.flow.cl/docs/api.html",
+    "email": "soporte@flow.cl"
+  },
+  "minimum-stability": "stable",
+  "require": {
+    "illuminate/database": "5.7.*",
+    "illuminate/routing": "5.7.*",
+    "illuminate/support": "5.7.*",
+    "illuminate/console": "5.7.*",
+    "darkghosthunter/flow-sdk": "^1.0.0"
+  },
+  "require-dev": {
+    "doctrine/dbal": "2.9.*",
+    "orchestra/testbench": "3.7.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "DarkGhostHunter\\Laraflow\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "DarkGhostHunter\\Laraflow\\FlowServiceProvider",
+        "DarkGhostHunter\\Laraflow\\FlowHelpersServiceProvider"
+      ],
+      "aliases": {
+        "FlowCoupon": "DarkGhostHunter\\Laraflow\\Facades\\FlowCoupon",
+        "FlowCustomer": "DarkGhostHunter\\Laraflow\\Facades\\FlowCustomer",
+        "FlowInvoice": "DarkGhostHunter\\Laraflow\\Facades\\FlowInvoice",
+        "FlowPayment": "DarkGhostHunter\\Laraflow\\Facades\\FlowPayment",
+        "FlowPlan": "DarkGhostHunter\\Laraflow\\Facades\\FlowPlan",
+        "FlowRefund": "DarkGhostHunter\\Laraflow\\Facades\\FlowRefund",
+        "FlowSettlement": "DarkGhostHunter\\Laraflow\\Facades\\FlowSettlement",
+        "FlowSubscription": "DarkGhostHunter\\Laraflow\\Facades\\FlowSubscription"
+      }
+    }
+  }
+}
