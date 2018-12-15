@@ -2,14 +2,10 @@
 
 namespace Tests\Http\Middleware;
 
-use DarkGhostHunter\Laraflow\Http\Middleware\VerifyWebhookMiddleware;
-use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Orchestra\Testbench\TestCase;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
-class VerifyFlowWebhookSecretMiddlewareTest extends TestCase
+class VerifyWebhookMiddlewareTest extends TestCase
 {
 
     protected static $token;
