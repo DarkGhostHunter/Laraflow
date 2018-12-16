@@ -48,7 +48,6 @@ class FlowServiceProvider extends ServiceProvider
             /** @var \Illuminate\Contracts\Foundation\Application $app */
 
             $flow = new Flow($app['log']);
-
             $flow->isProduction($app['config']['flow.environment'] === 'production');
             $flow->setCredentials($app['config']['flow.credentials']);
             $flow->setReturnUrls(array_filter($app['config']['flow.returns']));
@@ -66,13 +65,9 @@ class FlowServiceProvider extends ServiceProvider
                 ], $webhooks);
             }
 
-            if (count(array_filter($webhooks)) > 0) {
-                $flow->setWebhookUrls($webhooks);
-            }
+            $flow->setWebhookUrls(array_filter($webhooks));
 
-            if ($secret = $app['config']['flow.webhook-secret']) {
-                $flow->setWebhookSecret($secret);
-            }
+            if ($secret = $app['config']['flow.webhook-secret']) $flow->setWebhookSecret($secret);
 
             $flow->setAdapter(($adapter = $app['config']['flow.adapter'])
                     ? $app->make($adapter, [$flow])
