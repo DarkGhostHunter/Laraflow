@@ -1,5 +1,4 @@
-![alt text](https://i.imgur.com/ITc1gc6.png)
-
+![Laraflow](https://i.imgur.com/ITc1gc6.png)
 
 [![Latest Stable Version](https://poser.pugx.org/darkghosthunter/laraflow/v/stable)](https://packagist.org/packages/darkghosthunter/laraflow) [![License](https://poser.pugx.org/darkghosthunter/laraflow/license)](https://packagist.org/packages/darkghosthunter/laraflow)
 ![](https://img.shields.io/packagist/php-v/darkghosthunter/laraflow.svg)
@@ -99,7 +98,7 @@ A lot of goodies:
 * [Billable traits](#billable)
 * [Subscribable trait](#subscribable)
 * [Multisubscribable trait](#multisubscribable)
-* [Notifications Events](#notification-events)
+* [Notifications Events](#notifications-events)
 * [Webhook protection](#webhook-protection)
 * [Logging out-of-the-box](#logging)
 * [Third-party Http Client compatibility](#custom-adapter)
@@ -213,9 +212,22 @@ class User extends Model
 }
 ```
 
-#### Table of methods:
+| Method | Description
+|---|---
+| `hasCustomer()` | If the Model has a Flow Customer
+| `hasCard()` | If the Model Credit Card Registered in Flow
+| `getCustomer()` | Returns if the Flow Customer
+| `createCustomer()` | Creates a Customer in Flow
+| `updateCustomer()` | Updates a Customer in Flow using the local data
+| `deleteCustomer()` | Deletes a Customer in Flow
+| `registerCard()` | Creates a petition to register a Credit Card in Flow
+| `syncCard()` | Sync the local card data from Flow
+| `removeCard()` | Removes a Credit Card from Flow
+| `charge()` | Charge a Customer
+| `chargeToCard()` | Charge a Customer only if it has a Credit Card registered
 
-
+You can always checkout the source code for more handy methods.
+ 
 
 ### Subscribable
 
@@ -243,6 +255,21 @@ class User extends Model
     // ...
 }
 ```
+
+| Method | Description
+|---|---
+| `flowSubscription()` | Local Flow Subscription relationship
+| `hasSubscription()` | If the Model has a local Subscription 
+| `subscription()` | Returns the Flow Subscription
+| `subscribe()` | Subscribes the Customer to a Plan
+| `subscribeWithCard()` | Subscribes the Customer only if he has a Credit Card registered 
+| `unsubscribe()` | Unsubscribes the Customer at the end of his cycle
+| `unsubscribeNow()` | Immediately unsubscribes a Customer
+| `attachCoupon()` | Attaches a Coupon to the Flow Subscription
+| `attachOrReplaceCoupon()` | Attaches or Replaces a Coupon in the Flow Subscription
+| `detachCoupon()` | Detaches any Coupon from the Flow Subscription
+
+You can always checkout the source code for more handy methods.
 
 ### Multisubscribable
 
@@ -306,16 +333,35 @@ class SubscriptionController extends Controller
     }
 }
 ```
+### Method table
+
+| Method | Description
+|---|---
+| `flowSubscriptions()` | Local Flow Subscriptions relationship
+| `hasSubscriptions()` | If the User has at least one matching subscription
+| `isSubscribedTo()` | If the User is subscribed to a Plan
+| `subscription()` | Returns the Flow Subscription
+| `subscriptions()` | Returns all User's Flow Subscriptions 
+| `subscriptionsForPlanId()` | Return the Flow Subscriptions for a Plan Id
+| `subscribe()` | Subscribes the Customer to a Plan
+| `subscribeWithCard()` | Subscribes the Customer only if he has a Credit Card registered 
+| `unsubscribe()` | Unsubscribes the Customer at the end of his cycle
+| `unsubscribeNow()` | Immediately unsubscribes a Customer
+| `attachCoupon()` | Attaches a Coupon to the Flow Subscription
+| `attachOrReplaceCoupon()` | Attaches or Replaces a Coupon in the Flow Subscription
+| `detachCoupon()` | Detaches any Coupon from the Flow Subscription
+
+You can always checkout the source code for more handy methods.
 
 ### Notifications Events
 
-This package comes with Webhook routes and Events that will fire up when Flow tells your Application about Payments, Refunds and Plans paid:
+This package comes with Webhook routes and Events that will fire up when Flow hit these routes with Payments, Refunds and Plans paid:
 
 * `DarkGhostHunter\Laraflow\Events\PaymentResolvedEvent`
-* `DarkGhostHunter\Laraflow\Events\PlanPaidEvent`
 * `DarkGhostHunter\Laraflow\Events\RefundResolvedEvent`
+* `DarkGhostHunter\Laraflow\Events\PlanPaidEvent`
 
-The Events will receive a Payment or a Refund, depending on what Flow has sent.
+An Event will fire containing the Payment or a Refund, depending on what Flow has sent.
 
 While this was made to save you time, you can deactivate these routes and use your own with your own logic, with or without firing events, inside the published `flow.php`.
 
@@ -348,23 +394,19 @@ return [
 ];
 ```
 
+> The default Webhook Routes are protected by the `VerifyWebhookMiddleware`, which will validate the secret if there is set.  
+
 ### Webhook Protection
 
-Flow needs to hit your endpoints without `CSRF` verification. You will need to add an exception for CSRF Verification on the Webhook routes in your application for these transactions:
+Since disabling CSRF will unprotect the endpoints, **it's recommended to add a static Webhook Secret String** so only Flow can reach your application. This string is never visible to the end user.
 
-* `payment.urlConfirmation`
-* `refund.urlCallBack` 
-* `plan.urlCallback`
-
-Since disabling CSRF will unprotect the endpoints, you can add a static **Webhook Secret String** so only Flow can reach your application. This string is never visible to the end user.
-
-You can conveniently generate and save a Webhook Secret to protect your exposed endpoints: 
+You can conveniently generate a random string and save it as the Webhook Secret to protect your exposed endpoints: 
 
 ```bash
-php artisan webhook-secret:generate 
+php artisan webhook-secret:generate
 ```
 
-This will create a random string and it will be appended to your `.env` file automatically, **or replaced** if it already exists. 
+This will append the secret to your `.env` file automatically, **or replaced** if it already exists. 
 
 ```dotenv
 #...
@@ -385,7 +427,7 @@ Route::post('my-route/payment','MyFlowController@payment')
     ->middleware('flow-webhook');
 ```
 
-> If you didn't set a Webhook Secret but loaded the middleware, don't worry. The middleware won't do nothing as it checks first if the Webhook Secret exists.
+> If you loaded the middleware but didn't set a Webhook Secret, don't worry. The middleware won't do nothing as it checks first if the Webhook Secret exists before anything.
 
 ## Logging
 
@@ -427,9 +469,12 @@ $flow = app(Flow::class);
 echo $flow->isProduction(); // false..
 ```
 
-On the backstage, this package registers two Services Providers. `FlowServiceProvider` binds Flow inside the Service Container as a [deferred Service Provider](https://laravel.com/docs/5.7/providers#deferred-providers), and the other `FlowHelpersServiceProvider` loads the configuration, middleware and other helpers.
+On the backstage, this package registers two Services Providers:
+ 
+* `FlowHelpersServiceProvider` loads the configuration, middleware and other helpers.
+* `FlowServiceProvider` binds Flow inside the Service Container as a [deferred Service Provider](https://laravel.com/docs/5.7/providers#deferred-providers), along with the other services. 
 
-This ensures the configuration will be always loaded, but the Flow SDK will only load when called.
+This ensures the configuration will be always loaded first, and the Flow SDK only when called in your code.
 
 ## License
 
