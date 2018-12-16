@@ -99,6 +99,7 @@ A lot of goodies:
 * [Billable traits](#billable)
 * [Subscribable trait](#subscribable)
 * [Multisubscribable trait](#multisubscribable)
+* [Notifications Events](#notification-events)
 * [Webhook protection](#webhook-protection)
 * [Logging out-of-the-box](#logging)
 * [Third-party Http Client compatibility](#custom-adapter)
@@ -266,7 +267,7 @@ class User extends Model
 }
 ```
 
-Since the User can have multiple subscriptions, for most operations you will have to include the `subscriptionId` where you want to operate.
+Because a User can have multiple subscriptions under this trait, for most operations you will have to include the `subscriptionId` where you want to operate.
 
 
 ```php
@@ -306,6 +307,47 @@ class SubscriptionController extends Controller
 }
 ```
 
+### Notifications Events
+
+This package comes with Webhook routes and Events that will fire up when Flow tells your Application about Payments, Refunds and Plans paid:
+
+* `DarkGhostHunter\Laraflow\Events\PaymentResolvedEvent`
+* `DarkGhostHunter\Laraflow\Events\PlanPaidEvent`
+* `DarkGhostHunter\Laraflow\Events\RefundResolvedEvent`
+
+The Events will receive a Payment or a Refund, depending on what Flow has sent.
+
+While this was made to save you time, you can deactivate these routes and use your own with your own logic, with or without firing events, inside the published `flow.php`.
+
+```php
+<?php
+
+return [
+    
+    // ...
+    
+    'webhooks-defaults' => false,
+];
+```
+ 
+You can also override the the default for each, if `webhooks-defaults` are set to true:
+
+```php
+<?php
+
+return [
+    
+    // ...
+    
+    'webhooks' => [
+        'payment.urlConfirmation'   => 'https://app.com/my-payment-webhook',
+        'refund.urlCallBack'        => null,
+        'plan.urlCallback'          => 'https://app.com/my-plan-webhook'
+    ],
+
+];
+```
+
 ### Webhook Protection
 
 Flow needs to hit your endpoints without `CSRF` verification. You will need to add an exception for CSRF Verification on the Webhook routes in your application for these transactions:
@@ -339,9 +381,11 @@ After that, add the `VerifyWebhookMiddleware` to the Webhook endpoints. This Mid
 ```php
 <?php
 
-Route::post('flow/webhooks/payment','FlowController@payment')
+Route::post('my-route/payment','MyFlowController@payment')
     ->middleware('flow-webhook');
 ```
+
+> If you didn't set a Webhook Secret but loaded the middleware, don't worry. The middleware won't do nothing as it checks first if the Webhook Secret exists.
 
 ## Logging
 
@@ -364,7 +408,7 @@ return [
 ];
 ```
 
-This will allow in your test to make a face Adapter and catch all Requests.
+This will allow in your test to make a fake Adapter and catch all Requests.
 
 ## Service Providers
 

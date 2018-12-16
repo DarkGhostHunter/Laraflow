@@ -2,6 +2,7 @@
 
 namespace DarkGhostHunter\Laraflow;
 
+use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Support\ServiceProvider;
 use DarkGhostHunter\FlowSdk\Flow;
 use DarkGhostHunter\FlowSdk\Adapters\GuzzleAdapter;
@@ -30,8 +31,6 @@ class FlowServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__.'/../config/flow.php', 'flow');
-
         $this->registerFlow();
 
         $this->registerServices();
@@ -53,7 +52,23 @@ class FlowServiceProvider extends ServiceProvider
             $flow->isProduction($app['config']['flow.environment'] === 'production');
             $flow->setCredentials($app['config']['flow.credentials']);
             $flow->setReturnUrls(array_filter($app['config']['flow.returns']));
-            $flow->setWebhookUrls(array_filter($app['config']['flow.webhooks']));
+
+            $webhooks = $app['config']['flow.webhooks'];
+
+            if ($app['config']['flow.webhooks-defaults']) {
+                /** @var \Illuminate\Contracts\Routing\UrlGenerator $url */
+                $url = app(UrlGenerator::class);
+
+                $webhooks = array_merge([
+                    'payment.urlConfirmation'   => $url->to('flow/webhooks/payment'),
+                    'refund.urlCallBack'        => $url->to('flow/webhooks/refund'),
+                    'plan.urlCallback'          => $url->to('flow/webhooks/plan'),
+                ], $webhooks);
+            }
+
+            if (count(array_filter($webhooks)) > 0) {
+                $flow->setWebhookUrls($webhooks);
+            }
 
             if ($secret = $app['config']['flow.webhook-secret']) {
                 $flow->setWebhookSecret($secret);

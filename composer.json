@@ -21,6 +21,8 @@
     "illuminate/routing": "5.7.*",
     "illuminate/support": "5.7.*",
     "illuminate/console": "5.7.*",
+    "illuminate/events": "5.7.*",
+    "illuminate/log": "5.7.*",
     "darkghosthunter/flow-sdk": "^1.0.0"
   },
   "require-dev": {

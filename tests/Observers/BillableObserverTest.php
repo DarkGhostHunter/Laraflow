@@ -66,21 +66,7 @@ class SubscriptionEventsTest extends TestCase
 
         $this->loadLaravelMigrations();
 
-        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
-
         $this->artisan('migrate', ['--database' => 'testing'])->run();
-    }
-
-    /**
-     * Define environment setup.
-     *
-     * @param  \Illuminate\Foundation\Application  $app
-     *
-     * @return void
-     */
-    protected function getEnvironmentSetUp($app)
-    {
-        $app['config']->set('database.default', 'testing');
     }
 
     protected function createUser()
