@@ -14,6 +14,7 @@ use DarkGhostHunter\FlowSdk\Services\Plan;
 use DarkGhostHunter\FlowSdk\Services\Refund;
 use DarkGhostHunter\FlowSdk\Services\Settlement;
 use DarkGhostHunter\FlowSdk\Services\Subscription;
+use DarkGhostHunter\Laraflow\FlowHelpersServiceProvider as Helper;
 
 class FlowServiceProvider extends ServiceProvider
 {
@@ -59,9 +60,9 @@ class FlowServiceProvider extends ServiceProvider
                 $url = app(UrlGenerator::class);
 
                 $webhooks = array_merge([
-                    'payment.urlConfirmation'   => $url->to('flow/webhooks/payment'),
-                    'refund.urlCallBack'        => $url->to('flow/webhooks/refund'),
-                    'plan.urlCallback'          => $url->to('flow/webhooks/plan'),
+                    'payment.urlConfirmation' => $url->to(Helper::WEBHOOK_PATH . '/payment'),
+                    'refund.urlCallBack' => $url->to(Helper::WEBHOOK_PATH . '/refund'),
+                    'plan.urlCallback' => $url->to(Helper::WEBHOOK_PATH . '/plan'),
                 ], $webhooks);
             }
 

@@ -29,7 +29,7 @@ class FlowFacadesTest extends TestCase
         ];
     }
 
-    public function testGetPaymentFromFacade()
+    public function testAssertFacades()
     {
         $this->assertInstanceOf(
             \DarkGhostHunter\FlowSdk\Services\Payment::class, \FlowPayment::getFacadeRoot()

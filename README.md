@@ -437,7 +437,7 @@ No hassle! This package hooks Flow gracefully into Laravel's default logging sys
 
 While Flow SDK uses Guzzle as a default HTTP Client, you can make your own Adapter, implementing the `AdapterInterface` and [registered](https://laravel.com/docs/master/container) inside the [Service Container](https://laravel.com/docs/master/container).
 
-Then, put the name of your registered Adapter in the `adapter` section of your published `flow.php` config file. The Adapter will be resolved when Flow SDK starts.  
+Then, put the name of your registered Adapter in the `adapter` section of your published `flow.php` config file. The Adapter will be resolved when Flow SDK is instantiated.  
 
 ```php
 <?

@@ -37,7 +37,6 @@ class FlowHelpersServiceProvider extends ServiceProvider
 
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
-//        $this->app['router']->pushMiddlewareToGroup('web', VerifyWebhookMiddleware::class);
         $this->app['router']->aliasMiddleware('flow-webhook', VerifyWebhookMiddleware::class);
 
         if ($this->app['config']['flow.webhooks-defaults']) {
