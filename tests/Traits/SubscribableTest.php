@@ -8,6 +8,7 @@ use DarkGhostHunter\Laraflow\Models\FlowSubscription;
 use DarkGhostHunter\Laraflow\Subscribable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Orchestra\Testbench\TestCase;
 
@@ -98,11 +99,14 @@ class SubscribableTest extends TestCase
             ->once()
             ->with($this->user->flowSubscription()->value('subscription_id'))
             ->andReturnUsing(function ($id) {
-                return new SubscriptionResource([
+                $subscription = new SubscriptionResource([
                     'subscriptionId' => $id,
                     'planId' => 'testPlan',
-                    'customerId' => 'cus_abcd1234'
+                    'customerId' => 'cus_abcd1234',
+                    'status' => 1,
                 ]);
+                $subscription->setExists();
+                return $subscription;
             });
 
         $resource = $this->user->subscription();
@@ -124,19 +128,66 @@ class SubscribableTest extends TestCase
             ->once()
             ->with([
                 'customerId' => $this->user->flow_customer_id,
-                'foo' => 'bar'
+                'planId' => 'testPlanId3',
             ])
             ->andReturnUsing(function ($array) {
-                return new SubscriptionResource($array);
+                $subscription = new SubscriptionResource($array + [
+                    'subscriptionId' => 'sus_abcd1234',
+                    'trial_start' => '2018-01-01',
+                    'trial_end' => '2018-01-01',
+                    'period_start' => '2018-01-01',
+                    'period_end' => '2018-01-01',
+                    'status' => 1,
+                ]);
+                $subscription->setExists();
+                return $subscription;
             });
 
         $resource = $this->user->subscribe([
-            'foo' => 'bar'
+            'planId' => 'testPlanId3'
+        ]);
+
+        $subscriptionData = $this->user->flowSubscription()->first();
+
+        $this->assertInstanceOf(SubscriptionResource::class, $resource);
+        $this->assertEquals($this->user->flow_customer_id, $resource->customerId);
+        $this->assertTrue($resource->exists());
+        $this->assertEquals('2018-01-01', $subscriptionData->trial_starts_at->format('Y-m-d'));
+        $this->assertEquals('2018-01-01', $subscriptionData->trial_ends_at->format('Y-m-d'));
+        $this->assertEquals('2018-01-01', $subscriptionData->starts_at->format('Y-m-d'));
+        $this->assertEquals('2018-01-01', $subscriptionData->ends_at->format('Y-m-d'));
+    }
+
+    public function testSubscribeButDoesntPersist()
+    {
+        \FlowSubscription::shouldReceive('create')
+            ->once()
+            ->with([
+                'customerId' => $this->user->flow_customer_id,
+                'planId' => 'testPlanId3',
+            ])
+            ->andReturnUsing(function ($array) {
+                $subscription = new SubscriptionResource($array + [
+                        'planId' => 'testPlanId3',
+                        'subscriptionId' => 'sus_abcd1234',
+                        'trial_start' => '2018-01-01',
+                        'trial_end' => '2018-01-01',
+                        'period_start' => '2018-01-01',
+                        'period_end' => '2018-01-01',
+                        'status' => 4,
+                    ]);
+                $subscription->setExists(false);
+                return $subscription;
+            });
+
+        $resource = $this->user->subscribe([
+            'planId' => 'testPlanId3'
         ]);
 
         $this->assertInstanceOf(SubscriptionResource::class, $resource);
-        $this->assertEquals('bar', $resource->foo);
         $this->assertEquals($this->user->flow_customer_id, $resource->customerId);
+        $this->assertFalse($resource->exists());
+        $this->assertNull($this->user->flowSubscription()->first());
     }
 
     public function testDoesntSubscribe()
@@ -158,19 +209,34 @@ class SubscribableTest extends TestCase
             ->once()
             ->with([
                 'customerId' => $this->user->flow_customer_id,
-                'foo' => 'bar'
+                'planId' => 'testPlanId'
             ])
             ->andReturnUsing(function ($array) {
-                return new SubscriptionResource($array);
+                $subscription = new SubscriptionResource($array + [
+                        'subscriptionId' => 'sus_abcd1234',
+                        'trial_start' => '2018-01-01',
+                        'trial_end' => '2018-01-01',
+                        'period_start' => '2018-01-01',
+                        'period_end' => '2018-01-01',
+                ]);
+                $subscription->setExists(true);
+                return $subscription;
             });
 
         $resource = $this->user->subscribeWithCard([
-            'foo' => 'bar'
+            'planId' => 'testPlanId'
         ]);
 
+        $subscriptionData = $this->user->flowSubscription()->first();
+
         $this->assertInstanceOf(SubscriptionResource::class, $resource);
-        $this->assertEquals('bar', $resource->foo);
         $this->assertEquals($this->user->flow_customer_id, $resource->customerId);
+        $this->assertNotNull($subscriptionData);
+        $this->assertEquals('sus_abcd1234', $subscriptionData->subscription_id);
+        $this->assertEquals('2018-01-01', $subscriptionData->trial_starts_at->format('Y-m-d'));
+        $this->assertEquals('2018-01-01', $subscriptionData->trial_ends_at->format('Y-m-d'));
+        $this->assertEquals('2018-01-01', $subscriptionData->starts_at->format('Y-m-d'));
+        $this->assertEquals('2018-01-01', $subscriptionData->ends_at->format('Y-m-d'));
     }
 
     public function testDoesntSubscribeWithCard()
@@ -182,6 +248,99 @@ class SubscribableTest extends TestCase
         $this->assertFalse($resource);
     }
 
+    public function testUpdatesSubscription()
+    {
+        $this->updateUserWithSubscription();
+
+        Carbon::setTestNow(Carbon::create(2017,12,30));
+
+        $subscription = $this->user->flowSubscription()->first();
+
+        \FlowSubscription::shouldReceive('update')
+            ->once()
+            ->with(
+                $subscription->subscription_id,
+                ['trial_period_days' => 20]
+            )
+            ->andReturnUsing(function ($id, $array) {
+                $subscription = new SubscriptionResource($array + [
+                        'subscription_id' => $id,
+                        'trial_start' => '2018-01-01',
+                        'trial_end' => '2018-01-20',
+                        'period_start' => '2018-01-21',
+                        'period_end' => '2018-02-21',
+                    ]);
+                $subscription->setExists(true);
+                return $subscription;
+            });
+
+        $subscription = $this->user->updateSubscription(20);
+
+        $this->assertEquals(20, $subscription->trial_period_days);
+
+        $updatedData = $this->user->flowSubscription()->first();
+
+        $this->assertEquals('2018-01-01', $updatedData->trial_starts_at->toDateString());
+        $this->assertEquals('2018-01-20', $updatedData->trial_ends_at->toDateString());
+        $this->assertEquals('2018-01-21', $updatedData->starts_at->toDateString());
+        $this->assertEquals('2018-02-21', $updatedData->ends_at->toDateString());
+    }
+
+    public function testForceUpdateSubscription()
+    {
+        $this->updateUserWithSubscription();
+        $subscription = $this->user->flowSubscription()->first();
+
+        Carbon::setTestNow(Carbon::create(2018, 01, 05));
+
+        \FlowSubscription::shouldReceive('update')
+            ->once()
+            ->with(
+                $subscription->subscription_id,
+                ['trial_period_days' => 20]
+            )
+            ->andReturnUsing(function ($id, $array) {
+                $subscription = new SubscriptionResource($array + [
+                        'subscription_id' => $id,
+                        'trial_start' => '2018-01-01',
+                        'trial_end' => '2018-01-20',
+                        'period_start' => '2018-01-21',
+                        'period_end' => '2018-02-21',
+                    ]);
+                $subscription->setExists(true);
+                return $subscription;
+            });
+
+        $subscription = $this->user->forceUpdateSubscription(20);
+
+        $this->assertEquals(20, $subscription->trial_period_days);
+
+        $updatedData = $this->user->flowSubscription()->first();
+
+        $this->assertEquals('2018-01-01', $updatedData->trial_starts_at->toDateString());
+        $this->assertEquals('2018-01-20', $updatedData->trial_ends_at->toDateString());
+        $this->assertEquals('2018-01-21', $updatedData->starts_at->toDateString());
+        $this->assertEquals('2018-02-21', $updatedData->ends_at->toDateString());
+    }
+
+    public function testDoesntUpdateSubscriptionsIfDoesntExists()
+    {
+        $subscription = $this->user->updateSubscription(20);
+
+        $this->assertFalse($subscription);
+    }
+
+    public function testDoesntUpdateSubscriptionIfOutOfTrialDays()
+    {
+        $this->updateUserWithSubscription();
+
+        Carbon::setTestNow(Carbon::create(2018,01,05));
+
+        $subscription = $this->user->updateSubscription(20);
+
+        $this->assertFalse($subscription);
+    }
+
     public function testUnsubscribe()
     {
         $this->updateUserWithSubscription();
@@ -190,10 +349,12 @@ class SubscribableTest extends TestCase
             ->once()
             ->with($id = $this->user->flowSubscription()->value('subscription_id'), false)
             ->andReturnUsing(function ($id) {
-                return new SubscriptionResource([
+                $subscribe = new SubscriptionResource([
                     'subscriptionId' => $id,
                     'customerId' => $this->user->flow_customer_id,
                 ]);
+                $subscribe->setExists(false);
+                return $subscribe;
             });
 
         $resource = $this->user->unsubscribe();
@@ -201,6 +362,7 @@ class SubscribableTest extends TestCase
         $this->assertInstanceOf(SubscriptionResource::class, $resource);
         $this->assertEquals($id, $resource->subscriptionId);
         $this->assertEquals($this->user->flow_customer_id, $resource->customerId);
+        $this->assertNull($this->user->flowSubscription()->first());
     }
 
     public function testDoesntUnsubscribe()
@@ -218,10 +380,12 @@ class SubscribableTest extends TestCase
             ->once()
             ->with($id = $this->user->flowSubscription()->value('subscription_id'), true)
             ->andReturnUsing(function ($id) {
-                return new SubscriptionResource([
+                $subscription =  new SubscriptionResource([
                     'subscriptionId' => $id,
                     'customerId' => $this->user->flow_customer_id,
                 ]);
+                $subscription->setExists(false);
+                return $subscription;
             });
 
         $resource = $this->user->unsubscribeNow();
@@ -229,6 +393,7 @@ class SubscribableTest extends TestCase
         $this->assertInstanceOf(SubscriptionResource::class, $resource);
         $this->assertEquals($id, $resource->subscriptionId);
         $this->assertEquals($this->user->flow_customer_id, $resource->customerId);
+        $this->assertNull($this->user->flowSubscription()->first());
     }
 
     public function testDoesntUnsubscribeNow()
@@ -246,7 +411,8 @@ class SubscribableTest extends TestCase
             ->once()
             ->with(
                 $subscriptionId = $this->user->flowSubscription()->value('subscription_id'),
-                $couponId = 1234)
+                $couponId = 1234
+            )
             ->andReturnUsing(function ($id, $couponId) {
                 return new SubscriptionResource([
                     'subscriptionId' => $id,
@@ -254,22 +420,16 @@ class SubscribableTest extends TestCase
                 ]);
             });
 
-        $resource = $this->user->attachCoupon(1234);
+        $resource = $this->user->attachCoupon($couponId);
 
         $this->assertInstanceOf(SubscriptionResource::class, $resource);
         $this->assertEquals($subscriptionId, $resource->subscriptionId);
         $this->assertEquals($couponId, $resource->discount);
+        $this->assertEquals($couponId, $this->user->flowSubscription()->value('coupon_id'));
     }
 
     public function testDoesntAttachCouponWithNoSubscription()
     {
-        $resource = $this->user->attachCoupon(1234);
-
-        $this->assertFalse($resource);
-
-        $this->updateUserWithSubscription();
-        $this->updateSubscriptionWithCoupon();
-
         $resource = $this->user->attachCoupon(1234);
 
         $this->assertFalse($resource);

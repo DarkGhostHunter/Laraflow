@@ -253,6 +253,39 @@ trait Multisubscribable
     }
 
     /**
+     * Updates a Subscription in Flow
+     *
+     * @param string $subscriptionId
+     * @param int $trialPeriodDays
+     * @return bool|\DarkGhostHunter\FlowSdk\Resources\SubscriptionResource
+     */
+    public function updateSubscription(string $subscriptionId, int $trialPeriodDays)
+    {
+        /** @var \DarkGhostHunter\Laraflow\Models\FlowSubscription $subscription */
+        $subscription = $this->flowSubscriptions()
+            ->where('subscription_id', $subscriptionId)
+            ->first([
+                'flow_customer_id', 'subscription_id', 'trial_ends_at'
+            ]);
+
+        if ($subscription && $subscription->trial_ends_at && $subscription->trial_ends_at->isFuture()) {
+            return $this->forceUpdateSubscription($subscription->subscription_id, $trialPeriodDays);
+        }
+        return false;
+    }
+
+    /**
+     * Forcefully updates the Subscription in Flow
+     *
+     * @param int $trialPeriodDays
+     * @return \DarkGhostHunter\FlowSdk\Resources\SubscriptionResource
+     */
+    public function forceUpdateSubscription(string $subscriptionId, int $trialPeriodDays)
+    {
+        return $this->performUpdateSubscription($subscriptionId, $trialPeriodDays);
+    }
+
+    /**
      * Unsubscribe the Customer at the end of its cycle
      *
      * @param string $subscriptionId

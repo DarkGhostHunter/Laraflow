@@ -46,6 +46,30 @@ trait PerformSubscriptionOperations
     }
 
     /**
+     * Performs the Subscription Update
+     *
+     * @param string $subscriptionId
+     * @param int $trialPeriodDays
+     * @return \DarkGhostHunter\FlowSdk\Resources\SubscriptionResource
+     */
+    public function performUpdateSubscription(string $subscriptionId, int $trialPeriodDays)
+    {
+        $flowSubscription = \FlowSubscription::update($subscriptionId, [
+            'trial_period_days' => $trialPeriodDays
+        ]);
+
+        if ($flowSubscription->exists()) {
+            $this->returnFlowSubscription()->update([
+                'trial_ends_at' => $flowSubscription->trial_end,
+                'starts_at' => $flowSubscription->period_start,
+                'ends_at' => $flowSubscription->period_end,
+            ]);
+        }
+
+        return $flowSubscription;
+    }
+
+    /**
      * Performs the Unsubscribe
      *
      * @param string $subscriptionId
