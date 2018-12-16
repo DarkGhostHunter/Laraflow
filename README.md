@@ -263,6 +263,7 @@ class User extends Model
 | `subscription()` | Returns the Flow Subscription
 | `subscribe()` | Subscribes the Customer to a Plan
 | `subscribeWithCard()` | Subscribes the Customer only if he has a Credit Card registered 
+| `updateSubscription()` | Updates the subscription trial days (if possible)
 | `unsubscribe()` | Unsubscribes the Customer at the end of his cycle
 | `unsubscribeNow()` | Immediately unsubscribes a Customer
 | `attachCoupon()` | Attaches a Coupon to the Flow Subscription
@@ -345,6 +346,7 @@ class SubscriptionController extends Controller
 | `subscriptionsForPlanId()` | Return the Flow Subscriptions for a Plan Id
 | `subscribe()` | Subscribes the Customer to a Plan
 | `subscribeWithCard()` | Subscribes the Customer only if he has a Credit Card registered 
+| `updateSubscription()` | Updates the subscription trial days (if possible)
 | `unsubscribe()` | Unsubscribes the Customer at the end of his cycle
 | `unsubscribeNow()` | Immediately unsubscribes a Customer
 | `attachCoupon()` | Attaches a Coupon to the Flow Subscription
