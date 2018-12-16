@@ -286,6 +286,43 @@ class SubscribableTest extends TestCase
         $this->assertEquals('2018-02-21', $updatedData->ends_at->toDateString());
     }
 
+    public function testForceUpdateSubscription()
+    {
+        $this->updateUserWithSubscription();
+        $subscription = $this->user->flowSubscription()->first();
+
+        Carbon::setTestNow(Carbon::create(2018, 01, 05));
+
+        \FlowSubscription::shouldReceive('update')
+            ->once()
+            ->with(
+                $subscription->subscription_id,
+                ['trial_period_days' => 20]
+            )
+            ->andReturnUsing(function ($id, $array) {
+                $subscription = new SubscriptionResource($array + [
+                        'subscription_id' => $id,
+                        'trial_start' => '2018-01-01',
+                        'trial_end' => '2018-01-20',
+                        'period_start' => '2018-01-21',
+                        'period_end' => '2018-02-21',
+                    ]);
+                $subscription->setExists(true);
+                return $subscription;
+            });
+
+        $subscription = $this->user->forceUpdateSubscription(20);
+
+        $this->assertEquals(20, $subscription->trial_period_days);
+
+        $updatedData = $this->user->flowSubscription()->first();
+
+        $this->assertEquals('2018-01-01', $updatedData->trial_starts_at->toDateString());
+        $this->assertEquals('2018-01-20', $updatedData->trial_ends_at->toDateString());
+        $this->assertEquals('2018-01-21', $updatedData->starts_at->toDateString());
+        $this->assertEquals('2018-02-21', $updatedData->ends_at->toDateString());
+    }
+
     public function testDoesntUpdateSubscriptionsIfDoesntExists()
     {
         $subscription = $this->user->updateSubscription(20);
