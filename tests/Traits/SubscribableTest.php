@@ -132,7 +132,6 @@ class SubscribableTest extends TestCase
             ])
             ->andReturnUsing(function ($array) {
                 $subscription = new SubscriptionResource($array + [
-                    'planId' => 'testPlanId3',
                     'subscriptionId' => 'sus_abcd1234',
                     'trial_start' => '2018-01-01',
                     'trial_end' => '2018-01-01',
@@ -141,6 +140,7 @@ class SubscribableTest extends TestCase
                     'status' => 1,
                 ]);
                 $subscription->setExists();
+                return $subscription;
             });
 
         $resource = $this->user->subscribe([
@@ -151,7 +151,7 @@ class SubscribableTest extends TestCase
 
         $this->assertInstanceOf(SubscriptionResource::class, $resource);
         $this->assertEquals($this->user->flow_customer_id, $resource->customerId);
-        $this->assertTrue($resource->setExists());
+        $this->assertTrue($resource->exists());
         $this->assertEquals('2018-01-01', $subscriptionData->trial_starts_at->format('Y-m-d'));
         $this->assertEquals('2018-01-01', $subscriptionData->trial_ends_at->format('Y-m-d'));
         $this->assertEquals('2018-01-01', $subscriptionData->starts_at->format('Y-m-d'));
