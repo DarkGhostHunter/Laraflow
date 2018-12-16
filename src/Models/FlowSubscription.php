@@ -8,7 +8,17 @@ use Illuminate\Database\Eloquent\Model;
  * Class FlowSubscription
  * @package DarkGhostHunter\Laraflow\Models
  *
- * @property mixed coupon_id
+ * @property int $id
+ * @property string $subscription_id
+ * @property string $flow_customer_id
+ * @property string $plan_id
+ * @property string $coupon_id
+ * @property \Illuminate\Support\Carbon $trial_starts_at
+ * @property \Illuminate\Support\Carbon $trial_ends_at
+ * @property \Illuminate\Support\Carbon $starts_at
+ * @property \Illuminate\Support\Carbon $ends_at
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
  */
 class FlowSubscription extends Model
 {

@@ -128,6 +128,38 @@ trait Subscribable
     }
 
     /**
+     * Updates a Subscription in Flow
+     *
+     * @param int $trialPeriodDays
+     * @return bool|\DarkGhostHunter\FlowSdk\Resources\SubscriptionResource
+     */
+    public function updateSubscription(int $trialPeriodDays)
+    {
+        /** @var \DarkGhostHunter\Laraflow\Models\FlowSubscription $subscription */
+        $subscription = $this->flowSubscription()->first([
+            'flow_customer_id', 'subscription_id', 'trial_ends_at'
+        ]);
+
+        if ($subscription && $subscription->trial_ends_at && $subscription->trial_ends_at->isFuture()) {
+            return $this->performUpdateSubscription($subscription->subscription_id, $trialPeriodDays);
+        }
+        return false;
+    }
+
+    /**
+     * Forcefully updates the Subscription in Flow
+     *
+     * @param int $trialPeriodDays
+     * @return \DarkGhostHunter\FlowSdk\Resources\SubscriptionResource
+     */
+    public function forceUpdateSubscription(int $trialPeriodDays)
+    {
+        return $this->performUpdateSubscription(
+            $this->flowSubscription()->value('subscription_id'), $trialPeriodDays
+        );
+    }
+
+    /**
      * Unsubscribe the Customer from his subscription at the end of its cycle
      *
      * @return bool|\DarkGhostHunter\FlowSdk\Resources\BasicResource
