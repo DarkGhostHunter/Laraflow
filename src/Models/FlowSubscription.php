@@ -31,6 +31,11 @@ class FlowSubscription extends Model
         'ends_at',
     ];
 
+    /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
     protected $guarded = [
         'id'
     ];

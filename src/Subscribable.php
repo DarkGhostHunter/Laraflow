@@ -56,6 +56,32 @@ trait Subscribable
 
     /*
     |--------------------------------------------------------------------------
+    | Subscription Helpers
+    |--------------------------------------------------------------------------
+    */
+
+    /**
+     * Return if the User has a subscription
+     *
+     * @return bool
+     */
+    public function hasSubscription()
+    {
+        return $this->flowSubscription()->exists();
+    }
+
+    /**
+     * Return if the User doesn't has a subscription
+     *
+     * @return bool
+     */
+    public function doesntHaveSubscription()
+    {
+        return !$this->hasSubscription();
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | Subscription Operations
     |--------------------------------------------------------------------------
     */
@@ -100,7 +126,6 @@ trait Subscribable
         }
         return false;
     }
-
 
     /**
      * Unsubscribe the Customer from his subscription at the end of its cycle

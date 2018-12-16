@@ -345,6 +345,58 @@ class MultisubscribableTest extends TestCase
         );
     }
 
+    public function testSubscribesWithCard()
+    {
+        $this->updateUserWithSubscriptions();
+        $this->updateUserWithCard();
+
+        \FlowSubscription::shouldReceive('create')
+            ->once()
+            ->with([
+                'customerId' => $this->user->flow_customer_id,
+                'planId' => 'testPlan3',
+                'foo' => 'bar',
+            ])
+            ->andReturnUsing(function ($array) {
+                return new SubscriptionResource([
+                    'customerId' => $array['customerId'],
+                    'subscriptionId' => 'sus_abcd1239',
+                    'planId' => $array['planId'],
+                    'trial_start' => '2018-01-01',
+                    'trial_end' => '2018-02-01',
+                    'period_start' => 1,
+                    'foo' => 'bar',
+                    'status' => 1,
+                ]);
+            });
+
+        $subscription = $this->user->subscribeWithCard([
+            'planId' => 'testPlan3',
+            'foo' => 'bar'
+        ]);
+
+        $this->assertInstanceOf(SubscriptionResource::class, $subscription);
+        $this->assertEquals('bar', $subscription->foo);
+        $this->assertEquals('testPlan3', $subscription->planId);
+
+        $this->assertTrue(
+            $this->user->flowSubscriptions()->where('plan_id', 'testPlan3')->exists()
+        );
+    }
+
+    public function testDoesntSubscribesWithoutCard()
+    {
+        $this->updateUserWithSubscriptions();
+
+        $subscription = $this->user->subscribeWithCard([
+            'planId' => 'testPlan3',
+            'foo' => 'bar'
+        ]);
+
+        $this->assertFalse($subscription);
+    }
+
+
     public function testDoesntSubscribeIfHasSamePlan()
     {
         $this->updateUserWithSubscriptions();

@@ -146,20 +146,6 @@ trait Multisubscribable
     }
 
     /**
-     * Returns the Subscriptions for a particular Plan Id
-     *
-     * @param string $planId
-     * @return bool|\Illuminate\Support\Collection
-     */
-    public function subscriptionsForPlanId(string $planId)
-    {
-        if ($this->isSubscribedTo($planId) && $customerName = $this->getCustomerName()) {
-            return $this->performGetSubscriptions($planId, $customerName);
-        }
-        return false;
-    }
-
-    /**
      * Returns all Customer Subscriptions
      *
      * @return \Illuminate\Support\Collection|bool
@@ -188,6 +174,20 @@ trait Multisubscribable
 
                 return $collection;
             }
+        }
+        return false;
+    }
+
+    /**
+     * Returns the Subscriptions for a particular Plan Id
+     *
+     * @param string $planId
+     * @return bool|\Illuminate\Support\Collection
+     */
+    public function subscriptionsForPlanId(string $planId)
+    {
+        if ($this->isSubscribedTo($planId) && $customerName = $this->getCustomerName()) {
+            return $this->performGetSubscriptions($planId, $customerName);
         }
         return false;
     }
@@ -223,6 +223,20 @@ trait Multisubscribable
         // Check first if the user is subscribing to the same plan.
         if ($this->isNotSubscribedTo($attributes['planId'])) {
             return $this->performSubscribe($attributes);
+        }
+        return false;
+    }
+
+    /**
+     * Subscribes using the Credit Card
+     *
+     * @param array $attributes
+     * @return \DarkGhostHunter\FlowSdk\Resources\BasicResource|bool
+     */
+    public function subscribeWithCard(array $attributes)
+    {
+        if ($this->hasCard()) {
+            return $this->subscribe($attributes);
         }
         return false;
     }

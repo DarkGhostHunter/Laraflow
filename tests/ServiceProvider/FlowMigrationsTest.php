@@ -17,7 +17,6 @@ class FlowMigrationsTest extends TestCase
     protected function getPackageProviders($app)
     {
         return [
-            'DarkGhostHunter\Laraflow\FlowServiceProvider',
             'DarkGhostHunter\Laraflow\FlowHelpersServiceProvider',
         ];
     }
@@ -33,21 +32,7 @@ class FlowMigrationsTest extends TestCase
 
         $this->loadLaravelMigrations();
 
-        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
-
         $this->artisan('migrate', ['--database' => 'testing'])->run();
-    }
-
-    /**
-     * Define environment setup.
-     *
-     * @param  \Illuminate\Foundation\Application  $app
-     *
-     * @return void
-     */
-    protected function getEnvironmentSetUp($app)
-    {
-        $app['config']->set('database.default', 'testing');
     }
 
     public function testUpdatesUsersTable()

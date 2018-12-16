@@ -50,12 +50,25 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Default Webhook Routes & Events
+    |--------------------------------------------------------------------------
+    |
+    | You can include the convenient default Webhook for Payments, Refunds and
+    | Plans paid, which will be appended automatically to your transactions.
+    | These routes will automatically dispatch events when hit by Flow.
+    |
+    */
+
+    'webhooks-defaults' => true,
+
+    /*
+    |--------------------------------------------------------------------------
     | Webhooks URLs
     |--------------------------------------------------------------------------
     |
     | Webhooks URLs can also be appended by default to these transactions.
-    | Flow will use them to notify different events in Flow servers. You
-    | will need to set proper logic to receive them and process them.
+    | Flow will hit them when a transaction is resolved there. If you're
+    | using defaults, you can override them otherwise they'll be empty.
     |
     */
 

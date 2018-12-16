@@ -10,6 +10,21 @@ class FlowHelpersServiceProvider extends ServiceProvider
 {
 
     /**
+     * Constant path for Webhooks
+     */
+    public const WEBHOOK_PATH = 'flow/webhooks';
+
+    /**
+     * Register bindings in the container.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        $this->mergeConfigFrom(__DIR__.'/../config/flow.php', 'flow');
+    }
+
+    /**
      * Perform post-registration booting of services.
      *
      * @return void
@@ -22,15 +37,14 @@ class FlowHelpersServiceProvider extends ServiceProvider
 
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
-        if ($this->app->runningInConsole()) {
-            $this->commands([
-                SecretGenerateCommand::class,
-            ]);
+//        $this->app['router']->pushMiddlewareToGroup('web', VerifyWebhookMiddleware::class);
+        $this->app['router']->aliasMiddleware('flow-webhook', VerifyWebhookMiddleware::class);
+
+        if ($this->app['config']['flow.webhooks-defaults']) {
+            $this->loadRoutesFrom(__DIR__ . '/../routes/webhooks.php');
         }
 
-        $router = $this->app['router'];
-
-        $router->pushMiddlewareToGroup('web', VerifyWebhookMiddleware::class);
-        $router->aliasMiddleware('flow-webhook', VerifyWebhookMiddleware::class);
+        if ($this->app->runningInConsole())
+            $this->commands([SecretGenerateCommand::class]);
     }
 }

@@ -208,7 +208,7 @@ trait Billable
     }
 
     /**
-     * Creates a Customer on Flow
+     * Creates a Customer in Flow
      *
      * @param array $attributes
      * @return \DarkGhostHunter\FlowSdk\Resources\CustomerResource|bool
@@ -222,7 +222,7 @@ trait Billable
     }
 
     /**
-     * Forces creating a Customer on Flow
+     * Forcefully creates a Customer on Flow
      *
      * @param array $attributes
      * @return \DarkGhostHunter\FlowSdk\Resources\CustomerResource
