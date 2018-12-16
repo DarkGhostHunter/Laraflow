@@ -15,7 +15,7 @@ class SubscribableTest extends TestCase
 {
     use HasTestUser;
 
-    /** @var \Illuminate\Foundation\Auth\User|\DarkGhostHunter\Laraflow\Billable|\DarkGhostHunter\Laraflow\Subscribable */
+    /** @var \DarkGhostHunter\Laraflow\Billable & \DarkGhostHunter\Laraflow\Subscribable */
     protected $user;
 
     protected function createUser()
@@ -70,6 +70,24 @@ class SubscribableTest extends TestCase
 
         $this->assertInstanceOf(HasOne::class, $relation);
         $this->assertInstanceOf(FlowSubscription::class, $relation->getModel());
+    }
+
+    public function testHasSubscription()
+    {
+        $this->assertFalse($this->user->hasSubscription());
+
+        $this->updateUserWithSubscription();
+
+        $this->assertTrue($this->user->hasSubscription());
+    }
+
+    public function testDoesntHasSubscription()
+    {
+        $this->assertTrue($this->user->doesntHaveSubscription());
+
+        $this->updateUserWithSubscription();
+
+        $this->assertFalse($this->user->doesntHaveSubscription());
     }
 
     public function testSubscription()
