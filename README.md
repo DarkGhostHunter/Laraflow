@@ -158,9 +158,9 @@ class PaymentController extends Controller
 }
 ```
 
-Refer to the [Flow SDK Wiki](https://github.com/DarkGhostHunter/Laraflow/wiki/Services) to see how to use each Service.
+Refer to the [Flow SDK Wiki](https://github.com/DarkGhostHunter/FlowSdk/wiki/Services) to see how to use each Service. Just replace `$flow->{service}()` by the Facade of your choosing.
 
-### Billable
+### billable
 
 You can hook up charges to a user's Credit Card, or Email if he doesn't have one registered, through the `Billable` trait.
 
