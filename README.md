@@ -95,7 +95,7 @@ Route::post('flow/return/payment')
 A lot of goodies:
 
 * [Facades](#facades)
-* [Billable traits](#billable)
+* [Billable trait](#billable)
 * [Subscribable trait](#subscribable)
 * [Multisubscribable trait](#multisubscribable)
 * [Notifications Events](#notifications-events)
@@ -160,7 +160,7 @@ class PaymentController extends Controller
 
 Refer to the [Flow SDK Wiki](https://github.com/DarkGhostHunter/FlowSdk/wiki/Services) to see how to use each Service. Just replace `$flow->{service}()` by the Facade of your choosing.
 
-### billable
+### Billable
 
 You can hook up charges to a user's Credit Card, or Email if he doesn't have one registered, through the `Billable` trait.
 
