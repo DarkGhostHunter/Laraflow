@@ -7,7 +7,7 @@
 
 # Laraflow
 
-This package let's you use the unofficial [Flow SDK](https://github.com/DarkGhostHunter/FlowSdk) with Laravel 5.7.
+This package lets you use the unofficial [Flow SDK](https://github.com/DarkGhostHunter/FlowSdk) with Laravel 5.7.
 
 > This package is compatible with [Laravel Cashier](https://laravel.com/docs/master/billing), so you can use both.
 
@@ -21,7 +21,7 @@ composer require darkghosthunter/laraflow
 
 ### Database Preparation
 
-If you want to use the `Billable` trait, along with the `Subscribable` or `Multisubscribable` traits, you will need to run these database migrations:
+If you want to use the `Billable` trait to charge customers, along with the `Subscribable` or `Multisubscribable` traits for Flow Subscriptions, you will need to run these database migrations:
 
 ```php
 <?php
@@ -50,7 +50,7 @@ Schema::create('subscriptions', function (Blueprint $table) {
 
 These migrations are available in `database/migrations`.
 
-The point of these migrations is to sync the Customer Id, Subscription Id and the local identifiers. It's not necessary to run them if you are not planning to use these traits.
+The point of these migrations is to sync the Customer Id, Subscription Id and the local data. It's not necessary to run them if you are not planning to use these traits.
 
 ## Configuration
 
