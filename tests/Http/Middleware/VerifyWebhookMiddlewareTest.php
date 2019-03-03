@@ -11,7 +11,7 @@ class VerifyWebhookMiddlewareTest extends TestCase
     protected static $token;
     protected static $secret;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         self::$token = strtoupper(bin2hex(random_bytes(20)));
         self::$secret = bin2hex(random_bytes(16));

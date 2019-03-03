@@ -7,9 +7,16 @@
 
 # Laraflow
 
-This package let's you use the unofficial [Flow SDK](https://github.com/DarkGhostHunter/FlowSdk) with Laravel 5.7.
+This package lets you use the unofficial [Flow SDK](https://github.com/DarkGhostHunter/FlowSdk) with Laravel.
 
 > This package is compatible with [Laravel Cashier](https://laravel.com/docs/master/billing), so you can use both.
+
+## Requirements
+
+* PHP >= 7.1.3
+* Laravel 5.8
+
+> Check older releases for older Laravel versions.
 
 ## Installation
 
@@ -21,7 +28,7 @@ composer require darkghosthunter/laraflow
 
 ### Database Preparation
 
-If you want to use the `Billable` trait, along with the `Subscribable` or `Multisubscribable` traits, you will need to run these database migrations:
+If you want to use the `Billable` trait to charge customers, along with the `Subscribable` or `Multisubscribable` traits for Flow Subscriptions, you will need to run these database migrations:
 
 ```php
 <?php
@@ -50,7 +57,7 @@ Schema::create('subscriptions', function (Blueprint $table) {
 
 These migrations are available in `database/migrations`.
 
-The point of these migrations is to sync the Customer Id, Subscription Id and the local identifiers. It's not necessary to run them if you are not planning to use these traits.
+The point of these migrations is to sync the Customer Id, Subscription Id and the local data. It's not necessary to run them if you are not planning to use these traits.
 
 ## Configuration
 
@@ -95,7 +102,7 @@ Route::post('flow/return/payment')
 A lot of goodies:
 
 * [Facades](#facades)
-* [Billable traits](#billable)
+* [Billable trait](#billable)
 * [Subscribable trait](#subscribable)
 * [Multisubscribable trait](#multisubscribable)
 * [Notifications Events](#notifications-events)
@@ -158,7 +165,7 @@ class PaymentController extends Controller
 }
 ```
 
-Refer to the [Flow SDK Wiki](https://github.com/DarkGhostHunter/Laraflow/wiki/Services) to see how to use each Service.
+Refer to the [Flow SDK Wiki](https://github.com/DarkGhostHunter/FlowSdk/wiki/Services) to see how to use each Service. Just replace `$flow->{service}()` by the Facade of your choosing.
 
 ### Billable
 
@@ -474,7 +481,7 @@ echo $flow->isProduction(); // false..
 On the backstage, this package registers two Services Providers:
  
 * `FlowHelpersServiceProvider` loads the configuration, middleware and other helpers.
-* `FlowServiceProvider` binds Flow inside the Service Container as a [deferred Service Provider](https://laravel.com/docs/5.7/providers#deferred-providers), along with the other services. 
+* `FlowServiceProvider` binds Flow inside the Service Container as a [deferred Service Provider](https://laravel.com/docs/providers#deferred-providers), along with the other services. 
 
 This ensures the configuration will be always loaded first, and the Flow SDK only when called in your code.
 
