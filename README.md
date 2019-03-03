@@ -481,7 +481,7 @@ echo $flow->isProduction(); // false..
 On the backstage, this package registers two Services Providers:
  
 * `FlowHelpersServiceProvider` loads the configuration, middleware and other helpers.
-* `FlowServiceProvider` binds Flow inside the Service Container as a [deferred Service Provider](https://laravel.com/docs/5.7/providers#deferred-providers), along with the other services. 
+* `FlowServiceProvider` binds Flow inside the Service Container as a [deferred Service Provider](https://laravel.com/docs/providers#deferred-providers), along with the other services. 
 
 This ensures the configuration will be always loaded first, and the Flow SDK only when called in your code.
 

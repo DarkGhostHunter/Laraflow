@@ -3,6 +3,7 @@
 namespace DarkGhostHunter\Laraflow;
 
 use Illuminate\Contracts\Routing\UrlGenerator;
+use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
 use DarkGhostHunter\FlowSdk\Flow;
 use DarkGhostHunter\FlowSdk\Adapters\GuzzleAdapter;
@@ -16,15 +17,8 @@ use DarkGhostHunter\FlowSdk\Services\Settlement;
 use DarkGhostHunter\FlowSdk\Services\Subscription;
 use DarkGhostHunter\Laraflow\FlowHelpersServiceProvider as Helper;
 
-class FlowServiceProvider extends ServiceProvider
+class FlowServiceProvider extends ServiceProvider implements DeferrableProvider
 {
-    /**
-     * Indicates if loading of the provider is deferred.
-     *
-     * @var bool
-     */
-    protected $defer = true;
-
     /**
      * Register bindings in the container.
      *
