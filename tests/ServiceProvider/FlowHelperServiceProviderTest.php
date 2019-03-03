@@ -77,7 +77,7 @@ class FlowHelperServiceProviderTest extends TestCase
 
         $this->artisan('webhook-secret:generate');
 
-        $this->assertNotContains(
+        $this->assertStringNotContainsString(
             $secret,
             file_get_contents($this->app->environmentFilePath())
         );

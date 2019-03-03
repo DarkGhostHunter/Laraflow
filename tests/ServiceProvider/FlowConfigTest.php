@@ -17,26 +17,22 @@ class FlowConfigTest extends TestCase
         ];
     }
 
-    public function setUp()
+    public function setUp() : void
     {
         copy(
             __DIR__ . '/../../config/flow.php',
             $config = __DIR__ . '/../../vendor/orchestra/testbench-core/laravel/config/flow.php'
         );
 
-        putenv('FLOW_ENV=production');
-        putenv('FLOW_WEBHOOK_SECRET=123456789');
-
-
         // read the entire string
         $str = file_get_contents($config);
 
-        // replace something in the file string - this is a VERY simple example
+        // replace something in the file string
         $str = str_replace("env('FLOW_API_KEY')", "'theFlowApiKey'", $str);
+        $str = str_replace("env('FLOW_ENV', 'sandbox')", "'production'", $str);
+        $str = str_replace("env('FLOW_WEBHOOK_SECRET')", "'123456789'", $str);
 
-        // write the entire string
         file_put_contents($config, $str);
-
 
         parent::setUp();
     }
@@ -76,7 +72,7 @@ class FlowConfigTest extends TestCase
         $this->assertInstanceOf(AdapterInterface::class, $flow->getAdapter());
     }
 
-    public function tearDown()
+    public function tearDown() : void
     {
         unlink(__DIR__ . '/../../vendor/orchestra/testbench-core/laravel/config/flow.php');
         parent::tearDown();
