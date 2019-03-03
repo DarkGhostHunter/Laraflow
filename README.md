@@ -7,9 +7,16 @@
 
 # Laraflow
 
-This package lets you use the unofficial [Flow SDK](https://github.com/DarkGhostHunter/FlowSdk) with Laravel 5.7.
+This package lets you use the unofficial [Flow SDK](https://github.com/DarkGhostHunter/FlowSdk) with Laravel.
 
 > This package is compatible with [Laravel Cashier](https://laravel.com/docs/master/billing), so you can use both.
+
+## Requirements
+
+* PHP >= 7.1.3
+* Laravel 5.8
+
+> Check older releases for older Laravel versions.
 
 ## Installation
 
