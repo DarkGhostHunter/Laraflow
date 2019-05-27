@@ -112,6 +112,9 @@ class FlowFactory
     {
         $webhooks = $this->config->get('flow.webhooks');
 
+        // If the config sets to use Defaults Webhooks, we will just do exactly that.
+        // Doing this allows the developer to use defaults routes to his app without
+        // having to worry to overwrite them later by its own set custom routes.
         if ($this->config->get('flow.webhooks-defaults')) {
             /** @var \Illuminate\Contracts\Routing\UrlGenerator $url */
             $url = $this->app->make(UrlGenerator::class);
@@ -125,6 +128,7 @@ class FlowFactory
 
         $this->flow->setWebhookUrls(array_filter($webhooks));
 
+        // Additionally, we will set the Webhook Secret if needed.
         if ($secret = $this->config->get('flow.webhook-secret')) {
             $this->flow->setWebhookSecret($secret);
         }

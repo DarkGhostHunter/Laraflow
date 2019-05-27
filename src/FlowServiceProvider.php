@@ -5,14 +5,7 @@ namespace DarkGhostHunter\Laraflow;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
 use DarkGhostHunter\FlowSdk\Flow;
-use DarkGhostHunter\FlowSdk\Services\Coupon;
-use DarkGhostHunter\FlowSdk\Services\Customer;
-use DarkGhostHunter\FlowSdk\Services\Invoice;
-use DarkGhostHunter\FlowSdk\Services\Payment;
-use DarkGhostHunter\FlowSdk\Services\Plan;
-use DarkGhostHunter\FlowSdk\Services\Refund;
-use DarkGhostHunter\FlowSdk\Services\Settlement;
-use DarkGhostHunter\FlowSdk\Services\Subscription;
+use DarkGhostHunter\FlowSdk\Services\{Coupon, Customer, Invoice, Payment, Plan, Refund, Settlement, Subscription};
 
 class FlowServiceProvider extends ServiceProvider implements DeferrableProvider
 {

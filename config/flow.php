@@ -33,6 +33,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Migrations
+    |--------------------------------------------------------------------------
+    |
+    | By default, migrations are disabled for your application. Activating them
+    | will allow you to use the Billable, Subscribable and Multisubscribable
+    | traits to handle Plans in your User models. Leave "false" otherwise.
+    |
+    */
+
+    'migrations' => false,
+
+    /*
+    |--------------------------------------------------------------------------
     | Return URLs
     |--------------------------------------------------------------------------
     |

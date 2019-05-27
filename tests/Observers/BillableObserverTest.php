@@ -66,6 +66,8 @@ class SubscriptionEventsTest extends TestCase
 
         $this->loadLaravelMigrations();
 
+        $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
+
         $this->artisan('migrate', ['--database' => 'testing'])->run();
     }
 

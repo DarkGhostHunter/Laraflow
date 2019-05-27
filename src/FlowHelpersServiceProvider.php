@@ -2,13 +2,14 @@
 
 namespace DarkGhostHunter\Laraflow;
 
+use Illuminate\Contracts\Config\Repository;
+use Illuminate\Contracts\Routing\Registrar;
 use Illuminate\Support\ServiceProvider;
 use DarkGhostHunter\Laraflow\Console\Commands\SecretGenerateCommand;
 use DarkGhostHunter\Laraflow\Http\Middleware\VerifyWebhookMiddleware;
 
 class FlowHelpersServiceProvider extends ServiceProvider
 {
-
     /**
      * Constant path for Webhooks
      *
@@ -29,9 +30,11 @@ class FlowHelpersServiceProvider extends ServiceProvider
     /**
      * Perform post-registration booting of services.
      *
+     * @param \Illuminate\Contracts\Config\Repository $config
+     * @param \Illuminate\Contracts\Routing\Registrar $router
      * @return void
      */
-    public function boot()
+    public function boot(Repository $config, Registrar $router)
     {
         // Set the configuration file for publishing
         $this->publishes([
@@ -39,13 +42,15 @@ class FlowHelpersServiceProvider extends ServiceProvider
         ]);
 
         // Load the migrations for subscriptions
-        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        if ($config->get('flow.migrations')) {
+            $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        }
 
         // Register the middleware to protect the application in the Webhooks routes
-        $this->app['router']->aliasMiddleware('flow-webhook', VerifyWebhookMiddleware::class);
+        $router->aliasMiddleware('flow-webhook', VerifyWebhookMiddleware::class);
 
         // Load the Webhooks routes
-        if ($this->app['config']['flow.webhooks-defaults']) {
+        if ($config->get('flow.webhooks-defaults')) {
             $this->loadRoutesFrom(__DIR__ . '/../routes/webhooks.php');
         }
 
