@@ -22,23 +22,22 @@ class FlowMigrationsTest extends TestCase
     }
 
     /**
-     * Setup the test environment.
+     * Define environment setup.
      *
+     * @param  \Illuminate\Foundation\Application  $app
      * @return void
      */
-    protected function setUp() : void
+    protected function getEnvironmentSetUp($app)
     {
-        parent::setUp();
-
-        $this->loadLaravelMigrations();
-
-        $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
-
-        $this->artisan('migrate', ['--database' => 'testing'])->run();
+        // Setup default database to use sqlite :memory:
+        $app['config']->set('flow.migrations', true);
     }
 
     public function testUpdatesUsersTable()
     {
+        $this->loadLaravelMigrations();
+        $this->artisan('migrate', ['--database' => 'testing'])->run();
+
         $this->assertTrue(Schema::hasColumns('users', [
             'flow_customer_id',
             'flow_card_brand',
@@ -48,6 +47,9 @@ class FlowMigrationsTest extends TestCase
 
     public function testCreatesSubscriptionsTable()
     {
+        $this->loadLaravelMigrations();
+        $this->artisan('migrate', ['--database' => 'testing'])->run();
+
         $this->assertTrue(Schema::hasTable('flow_subscriptions'));
         $this->assertTrue(Schema::hasColumns('flow_subscriptions', [
             'id',
