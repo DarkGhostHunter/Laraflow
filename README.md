@@ -55,9 +55,22 @@ Schema::create('subscriptions', function (Blueprint $table) {
 });
 ```
 
-These migrations are available in `database/migrations`.
+These migrations are available in `database/migrations`. **These are deactivated by default**, but you can activate them if you [publish the config file](#configuration):
 
-The point of these migrations is to sync the Customer Id, Subscription Id and the local data. It's not necessary to run them if you are not planning to use these traits.
+```php
+<?php 
+
+return [
+    
+    // ...
+    
+    'migrations' => true,
+];
+```
+
+The point of these migrations is to sync the Customer ID, Subscription ID and the local data. 
+
+It's not necessary to run them if you are not planning to use these traits, so you can let this config on `false`, which is the default.
 
 ## Configuration
 
@@ -463,7 +476,7 @@ This will allow in your test to make a fake Adapter and catch all Requests.
 
 ## Service Providers
 
-This package adds Flow SDK into your application as a Service Provider. You can access the Flow object just pulling it out from the Service Container like you would normally do. 
+This package adds Flow SDK into your application as a Service Provider. You can access the Flow object just [pulling it out from the Service Container like you would normally do](https://laravel.com/docs/container#resolving), like using Dependency Injection or just using the `resolve()` helper, etc.
 
 ```php
 <?php
@@ -471,19 +484,33 @@ This package adds Flow SDK into your application as a Service Provider. You can 
 namespace App;
 
 use DarkGhostHunter\FlowSdk\Flow;
+use Illuminate\Http\Request;
+use App\Http\Controller;
 
-/** @var Flow $flow */
-$flow = app(Flow::class);
-
-echo $flow->isProduction(); // false..
+class ExampleController extends Controller
+{
+    public function pay(Request $request, Flow $flow)
+    {
+        if ($flow->isProduction()) {
+            // ...
+        }
+    }
+    
+    public function customPay()
+    {
+        $flow = app(Flow::class);
+        
+        echo $flow->isProduction(); // false..
+    }
+}
 ```
 
 On the backstage, this package registers two Services Providers:
  
 * `FlowHelpersServiceProvider` loads the configuration, middleware and other helpers.
-* `FlowServiceProvider` binds Flow inside the Service Container as a [deferred Service Provider](https://laravel.com/docs/providers#deferred-providers), along with the other services. 
+* `FlowServiceProvider` registers a single instance of Flow inside the Service Container as a [deferred Service Provider](https://laravel.com/docs/providers#deferred-providers), along with the other services. 
 
-This ensures the configuration will be always loaded first, and the Flow SDK only when called in your code.
+This ensures the configuration will be always loaded, and the Flow SDK only when is called in your code.
 
 ## License
 
