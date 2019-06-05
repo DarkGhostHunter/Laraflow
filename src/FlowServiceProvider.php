@@ -2,10 +2,10 @@
 
 namespace DarkGhostHunter\Laraflow;
 
-use Illuminate\Contracts\Support\DeferrableProvider;
-use Illuminate\Support\ServiceProvider;
 use DarkGhostHunter\FlowSdk\Flow;
 use DarkGhostHunter\FlowSdk\Services\{Coupon, Customer, Invoice, Payment, Plan, Refund, Settlement, Subscription};
+use Illuminate\Contracts\Support\DeferrableProvider;
+use Illuminate\Support\ServiceProvider;
 
 class FlowServiceProvider extends ServiceProvider implements DeferrableProvider
 {
@@ -15,14 +15,14 @@ class FlowServiceProvider extends ServiceProvider implements DeferrableProvider
      * @var array
      */
     public $singletons = [
-        Coupon::class,
-        Customer::class,
-        Invoice::class,
-        Payment::class,
-        Plan::class,
-        Refund::class,
-        Settlement::class,
-        Subscription::class,
+        Coupon::class => Coupon::class,
+        Customer::class => Customer::class,
+        Invoice::class => Invoice::class,
+        Payment::class => Payment::class,
+        Plan::class => Plan::class,
+        Refund::class => Refund::class,
+        Settlement::class => Settlement::class,
+        Subscription::class => Subscription::class,
     ];
 
     /**

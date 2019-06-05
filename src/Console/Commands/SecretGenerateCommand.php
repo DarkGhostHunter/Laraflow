@@ -4,6 +4,7 @@ namespace DarkGhostHunter\Laraflow\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Console\ConfirmableTrait;
+use Illuminate\Contracts\Config\Repository as Config;
 
 class SecretGenerateCommand extends Command
 {
@@ -26,6 +27,25 @@ class SecretGenerateCommand extends Command
     protected $description = 'Set the Webhook secret string';
 
     /**
+     * Configuration Repository
+     *
+     * @var \Illuminate\Contracts\Config\Repository
+     */
+    protected $config;
+
+    /**
+     * SecretGenerateCommand constructor.
+     *
+     * @param \Illuminate\Contracts\Config\Repository $config
+     */
+    public function __construct(Config $config)
+    {
+        parent::__construct();
+
+        $this->config = $config;
+    }
+
+    /**
      * Execute the console command.
      *
      * @return string|void
@@ -36,7 +56,7 @@ class SecretGenerateCommand extends Command
         $key = $this->generateRandomSecret();
 
         if ($this->option('show')) {
-            return $this->line('<comment>'.$key.'</comment>');
+            return $this->line('<comment>' . $key . '</comment>');
         }
 
         // @codeCoverageIgnoreStart
@@ -45,7 +65,7 @@ class SecretGenerateCommand extends Command
         }
         // @codeCoverageIgnoreEnd
 
-        $this->laravel['config']['flow.webhook-secret'] = $key;
+        $this->config->set('flow.webhook-secret', $key);
 
         $this->info('Webhook secret set successfully.');
     }
@@ -64,15 +84,15 @@ class SecretGenerateCommand extends Command
     /**
      * Set the application key in the environment file.
      *
-     * @param  string  $key
+     * @param string $key
      * @return bool
      */
     protected function setSecretInEnvironmentFile($key)
     {
-        $currentKey = $this->laravel['config']['flow.webhook-secret'];
+        $currentKey = $this->config->get('flow.webhook-secret');
 
         // @codeCoverageIgnoreStart
-        if (strlen($currentKey) !== 0 && (! $this->confirmToProceed())) {
+        if ($currentKey !== '' && (! $this->confirmToProceed())) {
             return false;
         }
         // @codeCoverageIgnoreEnd
@@ -85,7 +105,7 @@ class SecretGenerateCommand extends Command
     /**
      * Write a new environment file with the given key.
      *
-     * @param  string  $key
+     * @param string $key
      * @return void
      */
     protected function writeNewEnvironmentFileWith($key)
@@ -102,8 +122,7 @@ class SecretGenerateCommand extends Command
                     $envContent
                 )
             );
-        }
-        // Otherwise append it to the environment file
+        } // Otherwise append it to the environment file
         else {
             file_put_contents(
                 $this->laravel->environmentFilePath(),
@@ -120,7 +139,7 @@ class SecretGenerateCommand extends Command
      */
     protected function secretReplacementPattern()
     {
-        $escaped = preg_quote('='.$this->laravel['config']['flow.webhook-secret'], '/');
+        $escaped = preg_quote('=' . $this->config->get('flow.webhook-secret'), '/');
 
         return "/^FLOW_WEBHOOK_SECRET{$escaped}/m";
     }

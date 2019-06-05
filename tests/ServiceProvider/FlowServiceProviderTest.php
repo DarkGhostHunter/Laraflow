@@ -35,5 +35,4 @@ class FlowServiceProviderTest extends TestCase
         $this->assertInstanceOf(Settlement::class, $this->app->make(Settlement::class));
         $this->assertInstanceOf(Subscription::class, $this->app->make(Subscription::class));
     }
-
 }
