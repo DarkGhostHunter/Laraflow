@@ -27,7 +27,7 @@
     "darkghosthunter/flow-sdk": "^1.0.0"
   },
   "require-dev": {
-    "doctrine/dbal": "2.9.*",
+    "doctrine/dbal": "2.9.* || 2.13.*",
     "orchestra/testbench": "3.8.*"
   },
   "autoload": {
